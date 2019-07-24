@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require('mongoose');
 const body = require('body-parser');
 const joi = require('joi');
+//const auth = require('./views/js/auth');
 
 app.use(body.json());
 app.use(body.urlencoded({extended: true}));
@@ -16,7 +17,11 @@ app.use(express.static('public'));
 
 
 const schema = new mongoose.Schema({
-	name : String,
+	name : { type : String,
+			minlength : 5,
+			maxlength : 20,
+			required : true
+		},
 	password: String
 });
 
@@ -24,11 +29,15 @@ const data= new mongoose.model('User', schema);
 
 
 async function userData(req , res){
-	
+	let pre = await data.findOne({name: req.body.name});
+	if(pre) res.send('User already registered');
+
+else{
+	//let epass = auth(req.body.password)
 
  const newuser= new data({
- 		name : "safasdfgasdf",
- 		password : "sksfzcczxcxz"
+ 		name : req.body.name,
+ 		password :"sdalkjsakldjaskl"
  });
 
 
@@ -37,6 +46,7 @@ async function userData(req , res){
  //f(result){
 const result = await newuser.save();
 console.log(result);
+}
 //}
 //else
 //console.log("Invalid Details");
