@@ -7,9 +7,18 @@ async function salt(req)
 	return hash;
 } 
 
-module.exports = function auth(req)
+module.exports.auth = function auth(req)
 {
 	return salt(req);
 }
 
 
+async function comp(req , correct)
+	{
+		await bcrypt.compare(req.body.password , correct.password);
+	}
+
+module.exports.compare = function compare(req , correct)
+{
+	comp(req , correct);
+}

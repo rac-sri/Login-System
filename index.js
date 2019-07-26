@@ -3,7 +3,7 @@ const app = express();
 const mongoose = require('mongoose');
 const body = require('body-parser');
 const joi = require('joi');
-const auth = require('./views/js/auth');
+const {auth , compare} = require('./views/js/auth');
 const jwt = require('jsonwebtoken');
 
 
@@ -27,7 +27,7 @@ const schema = new mongoose.Schema({
 	password: String
 });
 
-const data= new mongoose.model('User', schema);
+const data= mongoose.model('User', schema);
 
 
 async function userData(req , res){
@@ -92,11 +92,14 @@ app.post('/me' , async (req , res)=>
 
 app.post('/login' , async (req , res)=>
 {
-const correct = data.findOne({name : req.body.name});
-if(!correct) return res.status(400).send("Invalid Username or Password");
 
-const passcomp = await bcrypt.compare(req.body.password , correct.password);
-if(!passcomp) return res.status(400).send("Invalid Username or Password");
+const correct = data.findOne({name : req.body.name}).select({name : 0});
+if(!correct)  return res.status(400).send("Invalid Username or Password");
+
+console.log(correct.password);
+
+const passcomp = compare(req , correct);
+if(!passcomp) { console.log("innnncorrect");return res.status(400).send("Invalid Username or Password");}
 
 res.send("Sucessfule");
 
