@@ -93,12 +93,12 @@ app.post('/me' , async (req , res)=>
 app.post('/login' , async (req , res)=>
 {
 
-const correct = data.findOne({name : req.body.name}).select({name : 0});
+const correct =await data.findOne({name : req.body.name});
 if(!correct)  return res.status(400).send("Invalid Username or Password");
 
-console.log(correct.password);
+ console.log(correct.password);
 
-const passcomp = compare(req , correct);
+ const passcomp = compare(req , correct);
 if(!passcomp) { console.log("innnncorrect");return res.status(400).send("Invalid Username or Password");}
 
 res.send("Sucessfule");
